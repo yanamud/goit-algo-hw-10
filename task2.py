@@ -47,16 +47,31 @@ plt.show()
 # Обчислення інтеграла
 result, error = spi.quad(f, a, b)
 
-def monte_carlo_integrate(func, a, b, y_min, y_max, num_points):
-    x = np.random.uniform(a, b, num_points)
-    y = np.random.uniform(y_min, y_max, num_points)
-    under_curve = np.sum(y < func(x))
-    area = (b - a) * (y_max - y_min) * (under_curve / num_points)
-    return area
+def monte_carlo_integrate(func, a, b, y_min, y_max, num_points, num_experiments):
 
+    #серія експериментів
+    average_area = 0
+    for _ in range(num_experiments):
+        x = np.random.uniform(a, b, num_points)
+        y = np.random.uniform(y_min, y_max, num_points)
+        under_curve = np.sum(y < func(x))
+        area = (b - a) * (y_max - y_min) * (under_curve / num_points)
 
-mc_result = monte_carlo_integrate(f, a, b, y_min, y_max, 1000000)
+        average_area += area
+
+    # Обчислення середньої площі
+    average_area /= num_experiments
+
+    return area, average_area
+
+# Кількість експериментів
+num_experiments = 100
+# Кількість точок
+num_points = 1000000
+
+mc_result = monte_carlo_integrate(f, a, b, y_min, y_max, num_points, num_experiments)
 
 print("Розрахунок інтегралу з використанням функції 'quad': ", result)
-print("Розрахунок інтегралу з використанням методу Монте-Карло: ", mc_result)
 print("Оцінка абсолютної помилки: ", error)
+print("Розрахунок інтегралу з використанням методу Монте-Карло: ", mc_result[0])
+print(f"Середня площа фігури, розрахованої з використанням методу Монте-Карло, за {num_experiments} експериментів: {mc_result[1]}")
